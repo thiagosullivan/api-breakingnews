@@ -37,5 +37,20 @@ const findAll = async (req, res) => {
   res.send(users);
 };
 
+const findById = async (req, res) => {
+  const id = req.params.id;
 
-module.exports = { create, findAll };
+  if(!mongoose.Types.ObjectId.isValid(id)){
+    return res.status(400).send({ message: "Invalid ID" });
+  }
+
+  const user = await userService.findByIdService(id);
+
+  if (!user) {
+    return res.status(400).send({ message: "User not found" });
+  }
+
+  res.send(user);
+};
+
+module.exports = { create, findAll, findById };
