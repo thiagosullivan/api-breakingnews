@@ -1,11 +1,10 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const connectDatabase = () => {
   console.log("Wait connecting to the database");
 
   mongoose
-    .connect(
-      process.env.MONGODB_URL,
+    .connect( process.env.MONGODB_URI,
       {
         useNewUrlParser: true,
         useUnifiedTopology: true,
@@ -15,4 +14,4 @@ const connectDatabase = () => {
     .catch((error) => console.log(error));
 };
 
-module.exports = connectDatabase;
+export default connectDatabase;
