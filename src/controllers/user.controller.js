@@ -1,15 +1,18 @@
 import userService from "../services/user.service.js";
 
 const create = async (req, res) => {
-
   try {
     const { name, username, email, password, avatar, background } = req.body;
 
     if (!name || !username || !email || !password || !avatar || !background) {
-      res.status(400).send({ message: "Submit all fields for registration" });
+      return res.status(400).send({
+        message: "Submit all fields for registration",
+      });
     }
 
-    const user = await userService.createService(req.body);
+    const user = await userService
+      .createService(req.body)
+      .catch((err) => console.log(err.message));
 
     if (!user) {
       res.status(400).send({ message: "Error creating user!" });
@@ -18,7 +21,7 @@ const create = async (req, res) => {
     res.status(201).send({
       message: "User created successfully",
       user: {
-        id: user._id,
+        id: user.id,
         name,
         username,
         email,
@@ -26,8 +29,8 @@ const create = async (req, res) => {
         background,
       },
     });
-  } catch(error){
-    res.status(500).send({ message: error.message})
+  } catch (error) {
+    res.status(500).send({ message: error.message });
   }
 };
 
@@ -41,7 +44,7 @@ const findAll = async (req, res) => {
 
     res.send(users);
   } catch (error) {
-    res.status(500).send({ message: error.message})
+    res.status(500).send({ message: error.message });
   }
 };
 
@@ -51,7 +54,7 @@ const findById = async (req, res) => {
 
     res.send(user);
   } catch (error) {
-    res.status(500).send({ message: error.message})
+    res.status(500).send({ message: error.message });
   }
 };
 
@@ -63,7 +66,7 @@ const update = async (req, res) => {
       res.status(400).send({ message: "Submit at least one field for update" });
     }
 
-    const {id, user} = req;
+    const { id, user } = req;
 
     await userService.updateService(
       id,
@@ -77,7 +80,7 @@ const update = async (req, res) => {
 
     res.send({ message: "User successfully updated!" });
   } catch (error) {
-    res.status(500).send({ message: error.message})
+    res.status(500).send({ message: error.message });
   }
 };
 
