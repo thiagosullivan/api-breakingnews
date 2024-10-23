@@ -6,6 +6,7 @@ import {
   findByIdService,
   searchByTitleService,
   searchByUserService,
+  updateNewsService,
 } from "../services/news.service.js";
 
 export const create = async (req, res) => {
@@ -117,7 +118,7 @@ export const topNews = async (req, res) => {
 
 export const findById = async (req, res) => {
   try {
-    const {id} = req.params;
+    const { id } = req.params;
 
     const news = await findByIdService(id);
 
@@ -133,21 +134,22 @@ export const findById = async (req, res) => {
         userName: news.user.username,
         userAvatar: news.user.avatar,
       },
-    })
-
+    });
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
-}
+};
 
 export const searchByTitle = async (req, res) => {
   try {
-    const {title} = req.query;
+    const { title } = req.query;
 
     const news = await searchByTitleService(title);
 
-    if(news.length === 0){
-      return res.status(400).send({ message: "There are no news with this title!" });
+    if (news.length === 0) {
+      return res
+        .status(400)
+        .send({ message: "There are no news with this title!" });
     }
 
     return res.send({
@@ -162,12 +164,11 @@ export const searchByTitle = async (req, res) => {
         userName: item.user.username,
         userAvatar: item.user.avatar,
       })),
-    })
-
+    });
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
-}
+};
 
 export const searchByUser = async (req, res) => {
   try {
@@ -187,9 +188,36 @@ export const searchByUser = async (req, res) => {
         userName: item.user.username,
         userAvatar: item.user.avatar,
       })),
-    })
-
+    });
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
-}
+};
+
+export const updateNews = async (req, res) => {
+  try {
+    const { title, text, banner } = req.body;
+    const { id } = req.params;
+
+    if (!title && !banner && !text) {
+      res.status(400).send({
+        message: "Submit at least one field to update the post",
+      });
+    }
+
+    const news = await findByIdService(id);
+
+    if (String(news.user._id) !== String(req.userId)) {
+      return res.status(400).send({
+        message: "You can't update this post!",
+      });
+    }
+
+    await updateNewsService(id, title, text, banner);
+
+    return res.send({ message: "Post successfully updated!" });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};
+
